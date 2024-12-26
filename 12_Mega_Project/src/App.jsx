@@ -1,38 +1,47 @@
-import { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import './App.css'
-import authService from "./appwrite/auth"
-import { login, logout } from "./store/authSlice"
-import { Footer, Header } from './components'
-import { Outlet } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import './App.css';
+import authService from './appwrite/auth';
+import { login, logout } from './store/authSlice';
+import { Footer, Header } from './components';
+import { Outlet } from 'react-router-dom';
 
 function App() {
-  const [loading, setLoading] = useState(true)
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     authService.getCurrentUser()
       .then((userData) => {
         if (userData) {
-          dispatch(login({ userData }))
+          dispatch(login({ userData }));
         } else {
-          dispatch(logout())
+          dispatch(logout());
         }
       })
-      .finally(() => setLoading(false))
-  })
+      .finally(() => setLoading(false));
+  }, [dispatch]);
 
   return !loading ? (
-    <div className='min-h-screen flex flex-wrap content-between bg-gray-400'>
-      <div className='w-full block'>
-        <Header />
-        <main>
+    <div className='min-h-screen flex flex-col bg-gradient-to-b from-gray-100 to-gray-400'>
+      {/* Header */}
+      <Header />
+
+      {/* Main Content */}  
+      <main className='flex-grow'>
+        <div className='container mx-auto p-4'>
           <Outlet />
-        </main>
-        <Footer />
-      </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
-  ) : null
+  ) : (
+    <div className='flex justify-center items-center min-h-screen bg-gray-200'>
+      <div className='text-xl text-gray-600'>Loading...</div>
+    </div>
+  );
 }
 
-export default App
+export default App;
