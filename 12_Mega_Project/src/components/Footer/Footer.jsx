@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Logo from '../Logo.jsx'
+import Logo from '../Logo'
 
 function Footer() {
   return (

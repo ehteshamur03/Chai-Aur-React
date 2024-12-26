@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
@@ -19,35 +20,43 @@ export default function PostForm({ post }) {
     const userData = useSelector((state) => state.auth.userData);
 
     const submit = async (data) => {
+        console.log("User Data:", userData); // Add this line to check if userData is correct
+    
         if (post) {
             const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
-
+    
             if (file) {
                 appwriteService.deleteFile(post.featuredImage);
             }
-
+    
             const dbPost = await appwriteService.updatePost(post.$id, {
                 ...data,
                 featuredImage: file ? file.$id : undefined,
             });
-
+    
             if (dbPost) {
                 navigate(`/post/${dbPost.$id}`);
             }
         } else {
             const file = await appwriteService.uploadFile(data.image[0]);
-
+    
             if (file) {
                 const fileId = file.$id;
                 data.featuredImage = fileId;
-                const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
-
+                data.user_Id = userData.$id;  // Ensure user_Id is included
+    
+                console.log("Post data being sent to createPost:", data);  // Log the data being sent
+    
+                const dbPost = await appwriteService.createPost(data);
+    
                 if (dbPost) {
                     navigate(`/post/${dbPost.$id}`);
                 }
             }
         }
     };
+    
+    
 
     const slugTransform = useCallback((value) => {
         if (value && typeof value === "string")
@@ -119,4 +128,14 @@ export default function PostForm({ post }) {
             </div>
         </form>
     );
+
 }
+PostForm.propTypes = {
+    post: PropTypes.shape({
+        title: PropTypes.string,
+        $id: PropTypes.string,
+        content: PropTypes.string,
+        status: PropTypes.string,
+        featuredImage: PropTypes.string,
+    }),
+};

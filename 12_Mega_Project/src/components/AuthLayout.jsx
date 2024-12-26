@@ -1,33 +1,22 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
-import React, {useEffect, useState} from 'react'
-import {useSelector} from 'react-redux'
-import {useNavigate} from 'react-router-dom'
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
-export default function Protected({children, authentication = true}) {
+import PropTypes from 'prop-types';
 
-    const navigate = useNavigate()
-    const [loader, setLoader] = useState(true)
-    const authStatus = useSelector(state => state.auth.status)
+function AuthLayout({ authentication, children }) {
+    const userData = useSelector((state) => state.auth.userData);
 
-    useEffect(() => {
-        //TODO: make it more easy to understand
+    // If authentication is required and user is not logged in, redirect to login
+    if (authentication && !userData) {
+        return <Navigate to="/login" />;
+    }
 
-        // if (authStatus ===true){
-        //     navigate("/")
-        // } else if (authStatus === false) {
-        //     navigate("/login")
-        // }
-        
-        //let authValue = authStatus === true ? true : false
+    return <div>{children}</div>;
 
-        if(authentication && authStatus !== authentication){
-            navigate("/Login")
-        } else if(!authentication && authStatus !== authentication){
-            navigate("/")
-        }
-        setLoader(false)
-    }, [authStatus, navigate, authentication])
-
-  return loader ? <h1>Loading...</h1> : <>{children}</>
 }
+AuthLayout.propTypes = {
+    authentication: PropTypes.bool.isRequired,
+    children: PropTypes.node.isRequired,
+};
+export default AuthLayout;
+

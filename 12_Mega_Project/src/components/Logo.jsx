@@ -1,9 +1,15 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
+import PropTypes from 'prop-types';
 
-function Logo({width = '100px'}) {
+function Logo({ width = '100px' }) {
   return (
-    <div>Logo</div>
+    <div style={{ width }}>Logo</div>
   )
+}
+
+Logo.propTypes = {
+  width: PropTypes.string
 }
 
 export default Logo
